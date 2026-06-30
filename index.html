@@ -1219,64 +1219,48 @@
       observer.observe(el);
     });
 
-    /* --- Feedback Form — API Submission --- */
-    var FEEDBACK_API = 'https://internet-usage-in-rural-areas.onrender.com/api/feedback';
-
-    document.getElementById('feedbackForm').addEventListener('submit', async function (e) {
+    /* --- Feedback Form Validation --- */
+    document.getElementById('feedbackForm').addEventListener('submit', function (e) {
       e.preventDefault();
-
-      var name  = document.getElementById('fname').value.trim();
-      var email = document.getElementById('femail').value.trim();
-      var occ   = document.getElementById('foccupation').value;
-      var msg   = document.getElementById('fmsg').value.trim();
-
-      // Validation
       var valid = true;
-      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      var nameErr  = document.getElementById('fnameErr');
+      // Name
+      var name = document.getElementById('fname').value.trim();
+      var nameErr = document.getElementById('fnameErr');
+      if (!name) {
+        nameErr.classList.add('show');
+        valid = false;
+      } else {
+        nameErr.classList.remove('show');
+      }
+
+      // Email
+      var email = document.getElementById('femail').value.trim();
       var emailErr = document.getElementById('femailErr');
-      var msgErr   = document.getElementById('fmsgErr');
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        emailErr.classList.add('show');
+        valid = false;
+      } else {
+        emailErr.classList.remove('show');
+      }
 
-      if (!name)                   { nameErr.classList.add('show');  valid = false; }
-      else                         { nameErr.classList.remove('show'); }
+      // Message
+      var msg = document.getElementById('fmsg').value.trim();
+      var msgErr = document.getElementById('fmsgErr');
+      if (!msg) {
+        msgErr.classList.add('show');
+        valid = false;
+      } else {
+        msgErr.classList.remove('show');
+      }
 
-      if (!emailRegex.test(email)) { emailErr.classList.add('show'); valid = false; }
-      else                         { emailErr.classList.remove('show'); }
-
-      if (!msg)                    { msgErr.classList.add('show');   valid = false; }
-      else                         { msgErr.classList.remove('show'); }
-
-      if (!valid) return;
-
-      // Disable button while sending
-      var submitBtn = this.querySelector('.btn-submit');
-      submitBtn.disabled = true;
-      submitBtn.textContent = '⏳ Sending…';
-
-      try {
-        var response = await fetch(FEEDBACK_API, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name, email: email, occupation: occ, message: msg })
-        });
-
-        var data = await response.json();
-
-        if (response.ok && data.success) {
-          var success = document.getElementById('formSuccess');
-          success.classList.add('show');
-          document.getElementById('feedbackForm').reset();
-          setTimeout(function () { success.classList.remove('show'); }, 5000);
-        } else {
-          var errMsg = (data.errors && data.errors.length) ? data.errors.join(' ') : 'Something went wrong. Please try again.';
-          alert('⚠️ ' + errMsg);
-        }
-      } catch (err) {
-        alert('⚠️ Could not reach the server. Please try again in a moment.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '✉ Submit Feedback';
+      if (valid) {
+        var success = document.getElementById('formSuccess');
+        success.classList.add('show');
+        document.getElementById('feedbackForm').reset();
+        // Hide after 5 seconds
+        setTimeout(function () { success.classList.remove('show'); }, 5000);
       }
     });
   </script>
