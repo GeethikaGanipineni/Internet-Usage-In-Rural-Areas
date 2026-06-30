@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ruralconnect-feedback-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: RECEIVER_EMAIL
+        sync: false
+      - key: ALLOWED_ORIGIN
+        value: https://geethikaganipineni.github.io
